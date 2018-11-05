@@ -15,14 +15,12 @@ public class Drive extends XbotSubsystem {
     private static XbotSubsystem instance = null;
     private static boolean initialized = false;
 
-    private DcMotor leftDriveMotor = null;
-    private DcMotor rightDriveMotor = null;
+    private DcMotor leftDriveMotors = null;
+    private DcMotor rightDriveMotors = null;
 
-    private double motorPowerMultiplier = 1.0;
-
-    private static final double COUNTS_PER_MOTOR_REV = 280;
+    private static final double COUNTS_PER_MOTOR_REV = 1120;
     private static final double DRIVE_GEAR_REDUCTION = 1.0;
-    private static final double WHEEL_DIAMETER_INCHES = 4.0 ;
+    private static final double WHEEL_DIAMETER_INCHES = 3.0 ;
     private static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                     (WHEEL_DIAMETER_INCHES * Math.PI);
 
@@ -59,11 +57,11 @@ public class Drive extends XbotSubsystem {
         if (initialized) return;
 
         super.init(hardwareMap, telemetry);
-        leftDriveMotor = hardwareMap.get(DcMotor.class, XbotRobotConstants.RIGHT_DRIVE);
-        rightDriveMotor = hardwareMap.get(DcMotor.class, XbotRobotConstants.LEFT_DRIVE);
+        leftDriveMotors = hardwareMap.get(DcMotor.class, XbotRobotConstants.RIGHT_DRIVE);
+        rightDriveMotors = hardwareMap.get(DcMotor.class, XbotRobotConstants.LEFT_DRIVE);
 
-        leftDriveMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightDriveMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftDriveMotors.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightDriveMotors.setDirection(DcMotorSimple.Direction.REVERSE);
 
         arcadeDrive = new ArcadeDrive(this);
         tankDrive = new TankDrive(this);
@@ -71,15 +69,9 @@ public class Drive extends XbotSubsystem {
         initialized = true;
     }
 
-    public void setMotorPowerMultiplier(double motorPowerMultiplier) {
-        this.motorPowerMultiplier = Range.clip(motorPowerMultiplier, 0.0, 1.0);
-    }
-
     public void setMotorPowers(double leftPower, double rightPower) {
-        leftPower *= motorPowerMultiplier;
-        rightPower *= motorPowerMultiplier;
-        leftDriveMotor.setPower(leftPower);
-        rightDriveMotor.setPower(rightPower);
+        leftDriveMotors.setPower(leftPower);
+        rightDriveMotors.setPower(rightPower);
     }
 
     public void setMotorPowers(double power) {
@@ -94,58 +86,43 @@ public class Drive extends XbotSubsystem {
     public void stop() {
         setMotorPowers(0);
     }
-//
-//    public void encoderDrive(double power, double leftInches, double rightInches, double timeout) {
-//        int leftRearTarget = leftRearDriveMotor.getCurrentPosition() +
-//                (int)(leftInches * COUNTS_PER_INCH);
-//        int leftFrontTarget = leftFrontDriveMotor.getCurrentPosition() +
-//                (int)(leftInches * COUNTS_PER_INCH);
-//        int rightRearTarget = rightRearDriveMotor.getCurrentPosition() +
-//                (int)(rightInches * COUNTS_PER_INCH);
-//        int rightFrontTarget = rightFrontDriveMotor.getCurrentPosition() +
-//                (int)(rightInches * COUNTS_PER_INCH);
-//        leftFrontDriveMotor.setTargetPosition(leftFrontTarget);
-//        leftRearDriveMotor.setTargetPosition(leftRearTarget);
-//        rightFrontDriveMotor.setTargetPosition(rightFrontTarget);
-//        rightRearDriveMotor.setTargetPosition(rightRearTarget);
-//
-//        for (DcMotor motor : motorArr) {
-//            motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        }
-//
-//        double previousMultiplier = motorPowerMultiplier;
-//        setMotorPowerMultiplier(1.0);
-//        setMotorPowers(power);
-//
-//        double startTime = GameClock.getInstance().getTimeElapsed();
-//        while (opMode.opModeIsActive() &&
-//                GameClock.getInstance().getTimeElapsed() - startTime < timeout &&
-//                areMotorsBusy()) {
-//        }
-//
-//        setMotorPowers(0);
-//        setMotorPowerMultiplier(previousMultiplier);
-//
-//       for (DcMotor motor : motorArr) {
-//           motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//       }
-//    }
 
-//    private boolean areMotorsBusy() {
-//        for (DcMotor motor : motorArr) {
-//            if (motor.isBusy()) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+    public void encoderDrive(double power, double leftInches, double rightInches, double timeout) {
+        int leftMotorTargets = leftDriveMotors.getCurrentPosition() +
+                (int)(leftInches * COUNTS_PER_INCH);
+        int rightMotorTargets = rightDriveMotors.getCurrentPosition() +
+                (int)(rightInches * COUNTS_PER_INCH);
+        leftDriveMotors.setTargetPosition(leftMotorTargets);
+        rightDriveMotors.setTargetPosition(rightMotorTargets);
 
-    public DcMotor getLeftDriveMotor() {
-        return leftDriveMotor;
+        leftDriveMotors.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightDriveMotors.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setMotorPowers(power);
+
+        double startTime = GameClock.getInstance().getTimeElapsed();
+        while (opMode.opModeIsActive() &&
+                GameClock.getInstance().getTimeElapsed() - startTime < timeout &&
+                areMotorsBusy()) {
+            //Do Nothing
+        }
+
+        setMotorPowers(0);
+
+        leftDriveMotors.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveMotors.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
     }
 
-    public DcMotor getRightDriveMotor() {
-        return rightDriveMotor;
+    private boolean areMotorsBusy() {
+        return leftDriveMotors.isBusy() || rightDriveMotors.isBusy();
+    }
+
+    public DcMotor getLeftDriveMotors() {
+        return leftDriveMotors;
+    }
+
+    public DcMotor getRightDriveMotors() {
+        return rightDriveMotors;
     }
 
     public ArcadeDrive getArcadeDrive() {

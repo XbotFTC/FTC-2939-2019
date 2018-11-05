@@ -23,7 +23,7 @@ public class GameClock {
     }
 
     /**
-     * This method will create a delay for however many seconds you specifiy
+     * This method will create a delay for however many seconds you specify
      * @param seconds
      */
     public void delay(double seconds) {
