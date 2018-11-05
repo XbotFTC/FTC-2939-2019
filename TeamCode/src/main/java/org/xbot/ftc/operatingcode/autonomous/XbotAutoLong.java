@@ -14,7 +14,7 @@ public class XbotAutoLong extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        BaseRobot.initOpMode(this, hardwareMap, telemetry);
+        BaseRobot.initOpMode(hardwareMap, telemetry);
         RobotSubsystemManager manager = RobotSubsystemManager.getInstance();
         Hanger hanger = (Hanger) manager.getSubsystem(Hanger.class.getName());
         Drive drive = (Drive) manager.getSubsystem(Drive.class.getName());

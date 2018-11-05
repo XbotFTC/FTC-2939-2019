@@ -1,6 +1,5 @@
 package org.xbot.ftc.robotcore.subsystems;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -42,11 +41,6 @@ public class RobotSubsystemManager {
         for (XbotSubsystem subsystem : registeredSubsystemsMap.values())
             subsystem.shutdownSubsystem();
         initialized = false;
-    }
-
-    public void setActiveOpMode(LinearOpMode opMode) {
-        for (XbotSubsystem subsystem : registeredSubsystemsMap.values())
-            subsystem.setActiveOpMode(opMode);
     }
 
     public XbotSubsystem getSubsystem(String className) {

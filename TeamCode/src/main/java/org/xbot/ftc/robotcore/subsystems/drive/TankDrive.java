@@ -14,7 +14,9 @@ public class TankDrive {
     public void drive(Gamepad gamepad) {
         double leftPower = gamepad.left_stick_y;
         double rightPower = gamepad.right_stick_y;
-        drive.setMotorPowers(Range.clip(leftPower, -1.0, 1.0),
+        if (Math.abs(leftPower - rightPower) <= 0.1) {
+            drive.setMotorPowers(Range.clip(Math.max(leftPower, rightPower), -1, 1));
+        } else drive.setMotorPowers(Range.clip(leftPower, -1.0, 1.0),
                 Range.clip(rightPower, -1.0, 1.0));
     }
 

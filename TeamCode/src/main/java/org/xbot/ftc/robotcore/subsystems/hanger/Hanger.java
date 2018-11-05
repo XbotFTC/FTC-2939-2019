@@ -8,19 +8,20 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.xbot.ftc.robotcore.XbotRobotConstants;
 import org.xbot.ftc.robotcore.subsystems.XbotSubsystem;
-import org.xbot.ftc.robotcore.utils.GameClock;
 
 public class Hanger extends XbotSubsystem {
 
     private static Hanger instance = null;
     private static boolean initialized = false;
 
-    private boolean hasActiveGoal = false;
-
     private DcMotor hangerMotor;
 
+    public static final int HANGER_FULLY_EXTENDED = -16000;
+    public static final int HANGER_HALF_EXTENDED = -8000;
+    public static final int HANGER_FULLY_DOWN = -100;
+
     public enum HangerPosition {
-        HIGH, MID, LOW;
+        HIGH, MID, LOW
     }
 
     private Hanger() {
@@ -43,7 +44,7 @@ public class Hanger extends XbotSubsystem {
             //Do Nothing
         } else {
             hangerMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            hangerMotor.setPower(power);
+            hangerMotor.setPower(Range.clip(power, -1, 1));
         }
     }
 
@@ -52,35 +53,35 @@ public class Hanger extends XbotSubsystem {
         hangerMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void runUntilGoalMet() {
+        setPower(0);
+        while (hangerMotor.isBusy()) {
+            // Wait Until Goal Met
+        }
+        setPower(0);
+    }
+
     public void setHangerGoal(int goal) {
         hangerMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         hangerMotor.setTargetPosition(goal);
     }
 
-    public void runUntilGoalMet() {
-        setPower(0);
-        while (hangerMotor.isBusy() && opMode.opModeIsActive()) {
-            //Wait Until Goal Met
-        }
-        setPower(0);
-    }
-
-    public void stopEncoderDrive() {
-        hangerMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
     public void setHangerGoal(HangerPosition position) {
         switch (position) {
             case LOW:
-                setHangerGoal(-100);
+                setHangerGoal(HANGER_FULLY_DOWN);
                 break;
             case MID:
-                setHangerGoal(-9000);
+                setHangerGoal(HANGER_HALF_EXTENDED);
                 break;
             case HIGH:
-                setHangerGoal(-15000);
+                setHangerGoal(HANGER_FULLY_EXTENDED);
                 break;
         }
+    }
+
+    public void disruptHanger() {
+        hangerMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public int getEncoderValue() {

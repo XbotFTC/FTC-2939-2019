@@ -11,7 +11,7 @@ public class XbotTeleOpSubHandlerRegister {
      * @param xbotTeleOp
      */
     public void registerHandlers(XbotTeleOp xbotTeleOp) {
-        xbotTeleOp.registerHandler(new TeleOpDrive());
-        xbotTeleOp.registerHandler(new TeleOpHanger());
+        xbotTeleOp.registerHandler(new TeleOpDrive(), XbotTeleOp.SubHandlerController.DRIVER);
+        xbotTeleOp.registerHandler(new TeleOpHanger(), XbotTeleOp.SubHandlerController.OPERATOR);
     }
 }

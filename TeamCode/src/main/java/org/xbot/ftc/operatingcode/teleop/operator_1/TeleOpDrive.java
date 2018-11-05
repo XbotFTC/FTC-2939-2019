@@ -20,17 +20,57 @@ public class TeleOpDrive extends XbotOperatorSubHandler {
     }
 
     @Override
-    public void handle(Gamepad gamepad1, Gamepad gamepad2) {
-        tankDrive.drive(gamepad1);
+    public void handle(Gamepad gamepad) {
+        tankDrive.drive(gamepad);
     }
 
     @Override
-    public void stop() {
-        drive.stop();
+    public void onAPress() {
+
+    }
+
+    @Override
+    public void onBPress() {
+
+    }
+
+    @Override
+    public void onXPress() {
+
+    }
+
+    @Override
+    public void onYPress() {
+
+    }
+
+    @Override
+    public void onDpadUpPress() {
+
+    }
+
+    @Override
+    public void onDpadDownPress() {
+
+    }
+
+    @Override
+    public void onDpadLeftPress() {
+
+    }
+
+    @Override
+    public void onDpadRightPress() {
+
     }
 
     @Override
     public void updateTelemetry() {
 
+    }
+
+    @Override
+    public void stop() {
+        drive.stop();
     }
 }

@@ -3,7 +3,6 @@ package org.xbot.ftc.robotcore.subsystems.drive;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.xbot.ftc.robotcore.utils.GameClock;
@@ -26,28 +25,6 @@ public class Drive extends XbotSubsystem {
 
     private ArcadeDrive arcadeDrive;
     private TankDrive tankDrive;
-
-    public enum DrivePower {
-        FULL(1.0), HALF(0.5), QUARTER(0.25);
-
-        public final double POWER;
-
-        DrivePower(double power) {
-            this.POWER = power;
-        }
-    }
-
-    public enum TurnDirection {
-        LEFT(-1, 1), RIGHT(1, -1);
-
-        public final double LEFT_POWER;
-        public final double RIGHT_POWER;
-
-        TurnDirection(double leftPower, double rightPower) {
-            this.LEFT_POWER = leftPower;
-            this.RIGHT_POWER = rightPower;
-        }
-    }
 
     private Drive() {
     }
@@ -78,13 +55,19 @@ public class Drive extends XbotSubsystem {
         setMotorPowers(power, power);
     }
 
-    public void turn(TurnDirection direction, DrivePower drivePower) {
-        setMotorPowers(direction.LEFT_POWER * drivePower.POWER,
-                direction.RIGHT_POWER * drivePower.POWER);
+    public void turn(int degrees) {
+        // TODO Finish this method
     }
 
     public void stop() {
         setMotorPowers(0);
+    }
+
+    public void resetEncoders() {
+        leftDriveMotors.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDriveMotors.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftDriveMotors.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightDriveMotors.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void encoderDrive(double power, double leftInches, double rightInches, double timeout) {
@@ -100,8 +83,7 @@ public class Drive extends XbotSubsystem {
         setMotorPowers(power);
 
         double startTime = GameClock.getInstance().getTimeElapsed();
-        while (opMode.opModeIsActive() &&
-                GameClock.getInstance().getTimeElapsed() - startTime < timeout &&
+        while (GameClock.getInstance().getTimeElapsed() - startTime < timeout &&
                 areMotorsBusy()) {
             //Do Nothing
         }

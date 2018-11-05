@@ -13,36 +13,61 @@ public class TeleOpHanger extends XbotOperatorSubHandler {
     @Override
     public void start() {
         hanger = (Hanger)robotSystemsManager.getSubsystem(Hanger.class.getName());
+    }
+
+    @Override
+    public void handle(Gamepad gamepad) {
+        hanger.setPower(gamepad.right_stick_y);
+    }
+
+    @Override
+    public void onAPress() {
         hanger.resetEncoder();
     }
 
     @Override
-    public void handle(Gamepad gamepad1, Gamepad gamepad2) {
-        if (gamepad2.dpad_up) {
-            hanger.setHangerGoal(-17000);
-        } else if (gamepad2.dpad_down) {
-            hanger.setHangerGoal(-9000);
-        } else if (gamepad2.dpad_left) {
-            hanger.setHangerGoal(-500);
-        } else if (gamepad2.a) {
-            hanger.resetEncoder();
-        } else if (gamepad2.b) {
-            hanger.stopEncoderDrive();
-        } else if ((gamepad2.right_stick_y > 0) || (gamepad2.right_stick_y < 0)) {
-            hanger.setPower(gamepad2.right_stick_y);
-        } else {
-            hanger.setPower(0);
-        }
+    public void onBPress() {
+        hanger.disruptHanger();
     }
 
     @Override
-    public void stop() {
-        hanger.setPower(0);
+    public void onXPress() {
+
+    }
+
+    @Override
+    public void onYPress() {
+
+    }
+
+    @Override
+    public void onDpadUpPress() {
+        hanger.setHangerGoal(Hanger.HangerPosition.HIGH);
+    }
+
+    @Override
+    public void onDpadDownPress() {
+        hanger.setHangerGoal(Hanger.HangerPosition.LOW);
+    }
+
+    @Override
+    public void onDpadLeftPress() {
+        hanger.setHangerGoal(Hanger.HangerPosition.MID);
+    }
+
+    @Override
+    public void onDpadRightPress() {
+        hanger.setHangerGoal(Hanger.HangerPosition.MID);
     }
 
     @Override
     public void updateTelemetry() {
         XbotTelemetry.addData("Hanger Encoder Position", hanger.getEncoderValue());
         XbotTelemetry.addData("Are Hanger Motors Busy?", hanger.areMotorsBusy());
+    }
+
+    @Override
+    public void stop() {
+        hanger.setPower(0);
     }
 }
