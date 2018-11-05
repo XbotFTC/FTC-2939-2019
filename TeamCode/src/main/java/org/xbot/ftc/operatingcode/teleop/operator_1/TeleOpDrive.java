@@ -17,7 +17,6 @@ public class TeleOpDrive extends XbotOperatorSubHandler {
     public void start() {
         drive = (Drive)robotSystemsManager.getSubsystem(Drive.class.getName());
         tankDrive = drive.getTankDrive();
-        drive.setMotorPowerMultiplier(1.0);
     }
 
     @Override
@@ -32,5 +31,6 @@ public class TeleOpDrive extends XbotOperatorSubHandler {
 
     @Override
     public void updateTelemetry() {
+
     }
 }

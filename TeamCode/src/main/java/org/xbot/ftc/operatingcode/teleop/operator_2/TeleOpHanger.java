@@ -13,11 +13,26 @@ public class TeleOpHanger extends XbotOperatorSubHandler {
     @Override
     public void start() {
         hanger = (Hanger)robotSystemsManager.getSubsystem(Hanger.class.getName());
+        hanger.resetEncoder();
     }
 
     @Override
     public void handle(Gamepad gamepad1, Gamepad gamepad2) {
-        hanger.setPower(gamepad2.right_stick_y);
+        if (gamepad2.dpad_up) {
+            hanger.setHangerGoal(-17000);
+        } else if (gamepad2.dpad_down) {
+            hanger.setHangerGoal(-9000);
+        } else if (gamepad2.dpad_left) {
+            hanger.setHangerGoal(-500);
+        } else if (gamepad2.a) {
+            hanger.resetEncoder();
+        } else if (gamepad2.b) {
+            hanger.stopEncoderDrive();
+        } else if ((gamepad2.right_stick_y > 0) || (gamepad2.right_stick_y < 0)) {
+            hanger.setPower(gamepad2.right_stick_y);
+        } else {
+            hanger.setPower(0);
+        }
     }
 
     @Override
@@ -27,6 +42,7 @@ public class TeleOpHanger extends XbotOperatorSubHandler {
 
     @Override
     public void updateTelemetry() {
-        XbotTelemetry.addData("I'm running", 0);
+        XbotTelemetry.addData("Hanger Encoder Position", hanger.getEncoderValue());
+        XbotTelemetry.addData("Are Hanger Motors Busy?", hanger.areMotorsBusy());
     }
 }

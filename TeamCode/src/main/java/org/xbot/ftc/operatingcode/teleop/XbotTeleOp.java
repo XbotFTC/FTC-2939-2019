@@ -44,6 +44,7 @@ public class XbotTeleOp extends LinearOpMode {
                 handler.updateTelemetry();
 
                 for (XbotTelemetry telemetryData : XbotTelemetry.getDataToAddToTelemetry()) {
+                    telemetry.addLine();
                     telemetry.addData(telemetryData.getCaption(), telemetryData.getValue());
                 }
                 telemetry.addData("Game Clock: ", gameClock.getTimeElapsed());
